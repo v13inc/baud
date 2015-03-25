@@ -30,4 +30,9 @@
 .spacer {
   font-size: 13px;
   margin: 20px 0;
+  text-align: center;
+}
+.spacer2 {
+  border-bottom: 2px dashed black;
+  width: 480px;
 }
