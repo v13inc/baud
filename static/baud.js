@@ -41,7 +41,9 @@ TextCanvas.init = function(textarea, onSubmit) {
 }
 
 TextCanvas.clear = function(textarea) {
+  var cursorPos = textarea.selectionStart;
   textarea.value = TextCanvas.fill(textarea.cols, textarea.rows);
+  textarea.selectionStart = textarea.selectionEnd = cursorPos;
 }
 
 TextCanvas.chars = function(char, amount) {
@@ -96,23 +98,37 @@ TextCanvas.convertText = function(inputText, cols) {
 }
 
 // 
-// MessageRepo
+// MessageDispatcher
 //
 
-MessageRepo = Baud.MessageRepo = {};
+MessageDispatcher = Baud.MessageDispatcher = {};
 
-MessageRepo.url = '/api';
+MessageDispatcher.connected = false;
 
-MessageRepo.getMessages = function(finished) {
-  get(MessageRepo.url, function(status, text) {
-    finished(JSON.parse(text));
-  });
+MessageDispatcher.socket = function() {
+  if(MessageDispatcher.conn) return MessageDispatcher.conn;
+  var conn = MessageDispatcher.conn = io.connect();
+  conn.on('connect', MessageDispatcher.onConnect);
+  return conn;
 }
 
-MessageRepo.postMessage = function(name, message, finished) {
-  post(MessageRepo.url, { name: name, message: message }, function(status, text) {
-    finished(JSON.parse(text));
-  });
+MessageDispatcher.onConnect = function() {
+  var socket = MessageDispatcher.socket();
+  MessageDispatcher.connected = true;
+  socket.on('new_message', MessageDispatcher.onMessage);
+}
+
+MessageDispatcher.onMessage = function(message) {
+  console.log('message', message);
+  MessageList.addMessage(message);
+}
+
+MessageDispatcher.init = function() {
+  MessageDispatcher.socket();
+}
+
+MessageDispatcher.sendMessage = function(name, message) {
+  MessageDispatcher.socket().emit('send_message', { name: name, message: message });
 }
 
 // 
@@ -143,17 +159,13 @@ MessageInput.disable = function() {
 
 MessageInput.submit = function(message) {
   var name = MessageInput.nameEl.value.trim() || MessageInput.defaultName;
-  MessageInput.disable();
-  MessageRepo.postMessage(name, message, function(messages) {
-    MessageInput.clear();
-    MessageInput.enable();
-    MessageList.render(messages);
-  });
+  MessageDispatcher.sendMessage(name, message);
+  MessageInput.clear();
 }
 
 MessageInput.clear = function() {
   TextCanvas.clear(MessageInput.messageEl);
-  MessageInput.nameEl.value = '';
+  //MessageInput.nameEl.value = '';
 }
 
 MessageInput.init();
@@ -168,26 +180,38 @@ MessageList.template = document.getElementById('message-template').innerHTML;
 
 MessageList.container = document.getElementById('message-list');
 
+MessageList.messages = [];
+
 MessageList.init = function() {
-  MessageRepo.getMessages(MessageList.render);
+  MessageList.render(MESSAGES);
 }
 
 MessageList.render = function(messages) {
   var html = '';
   var template = MessageList.template;
   for(var i = 0; i < messages.length; i++) {
-    var text = template
-      .replace(/__NAME__/g, messages[i].name)
-      .replace(/__MESSAGE__/g, messages[i].message)
-      .replace(/__DATE__/g, MessageList.date(messages[i].date))
-    html += text;
+    html += MessageList.renderMessage(messages[i]);
   }
   MessageList.container.innerHTML = html;
+  MessageList.messages = messages;
+}
+
+MessageList.renderMessage = function(message) {
+    return MessageList.template
+      .replace(/__NAME__/g, message.name)
+      .replace(/__MESSAGE__/g, message.message)
+      .replace(/__DATE__/g, MessageList.date(message.date))
+}
+
+MessageList.addMessage = function(message) {
+  MessageList.messages.splice(0, 0, message);
+  MessageList.render(MessageList.messages);
 }
 
 MessageList.date = function(timestamp) {
   var now = Math.floor((new Date()).getTime() / 1000);
-  return (now - timestamp) + ' seconds ago';
+  var diff = now - timestamp;
+  return (diff > 0 ? diff : 0) + ' seconds ago';
 }
 
 MessageList.init();

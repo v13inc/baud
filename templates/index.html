@@ -30,6 +30,10 @@ _  /_/ / /_/ // /_/ // /_/ /
       <pre class="spacer">══  ══  ══  ══  ══  ══  ══  ══  ══  ══  ══  ══</pre>
       <div id="message-list"></div>
     </div>
+    <script>
+      MESSAGES = {{ messages_json|safe }};
+    </script>
+    <script src="socketio.js"></script>
     <script src="baud.js"></script>
   </body>
 </html>

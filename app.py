@@ -1,8 +1,8 @@
 import json
 import time
 import redis
-from flask import Flask, request, send_file
-from flask_restful import Resource, Api
+from flask import Flask, request, send_file, render_template
+from flask.ext.socketio import SocketIO, emit
 
 settings = {
     'redis': {
@@ -16,7 +16,8 @@ settings = {
 }
 
 app = Flask(__name__)
-api = Api(app)
+app.config['DEBUG'] = True
+socketio = SocketIO(app)
 
 class Message():
     def __init__(self, message, name = 'Anonymous', date = None):
@@ -62,26 +63,25 @@ class MessageRepo():
     @staticmethod
     def new_message(message, name):
         m = Message(message, name)
-        return MessageRepo.add_message(m)
+        MessageRepo.add_message(m)
+        return m
 
-class MessagesResource(Resource):
-    def get(self):
-        return MessageRepo.get_messages()
-
-    def post(self):
-        data = request.get_json(force = True)
-        MessageRepo.new_message(data['message'], data['name'])
-        return MessagesResource.get(self)
-
-api.add_resource(MessagesResource, '/api')
+@socketio.on('send_message')
+def handle_message(data):
+    message = MessageRepo.new_message(data['message'], data['name'])
+    emit('new_message', message.data(), broadcast = True)
 
 # add main route
 @app.route('/')
 def home():
-    return send_file('static/index.html')
+    return render_template('index.html', messages_json = json.dumps(MessageRepo.get_messages()))
+
+@app.route('/socketio.js')
+def socketio_js():
+    return send_file('static/socket.io.min.js')
 
 @app.route('/baud.js')
-def banners():
+def baud_js():
     return send_file('static/baud.js')
 
 @app.route('/style.css')
@@ -89,4 +89,5 @@ def style():
     return send_file('static/style.css')
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    socketio.run(app)
+    #app.run(debug = True)
