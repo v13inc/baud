@@ -62,7 +62,7 @@ TextCanvas.fill = function(cols, rows) {
 TextCanvas.keydown = function(textarea, onSubmit, e) {
   if(e.keyCode == 13) {
     e.preventDefault();
-    onSubmit(TextCanvas.convertText(textarea.value, textarea.cols));
+    onSubmit(TextCanvas.convert(textarea));
   } else {
     setTimeout(TextCanvas.overwrite.bind(null, textarea), 0);
   }
@@ -86,6 +86,10 @@ TextCanvas.overwrite = function(textarea) {
       .replace(/ /g, TextCanvas.blank);
     textarea.selectionStart = textarea.selectionEnd = cursorPos;
   }
+}
+
+TextCanvas.convert = function(textarea) {
+  return TextCanvas.convertText(textarea.value, textarea.cols);
 }
 
 TextCanvas.convertText = function(inputText, cols) {
@@ -145,6 +149,14 @@ MessageInput.nameEl = document.getElementById('name');
 
 MessageInput.init = function() {
   TextCanvas.init(MessageInput.messageEl, MessageInput.submit);
+  MessageInput.nameEl.addEventListener('keydown', MessageInput.onNameKeyup);
+}
+
+MessageInput.onNameKeyup = function(e) {
+  if(e.keyCode == 13) {
+    e.preventDefault();
+    MessageInput.submit();
+  }
 }
 
 MessageInput.enable = function() {
@@ -157,7 +169,8 @@ MessageInput.disable = function() {
   MessageInput.nameEl.disabled = true;
 }
 
-MessageInput.submit = function(message) {
+MessageInput.submit = function() {
+  var message = TextCanvas.convert(MessageInput.messageEl);
   var name = MessageInput.nameEl.value.trim() || MessageInput.defaultName;
   MessageDispatcher.sendMessage(name, message);
   MessageInput.clear();
