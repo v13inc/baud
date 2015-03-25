@@ -1,9 +1,8 @@
 #container {
+  font-size: 13px;
   width: 482px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   text-align: center;
+  margin: 0 auto;
 }
 .message-container {
   margin-top: 25px;
@@ -17,6 +16,7 @@
   padding: 7px 5px;
 }
 .message { 
+  font-size: 13px;
   width: 470px; 
   height: 140px;
   font-family: monospace; 
