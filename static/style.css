@@ -1,0 +1,32 @@
+#container {
+  width: 482px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.message-container {
+  margin-top: 25px;
+}
+.name { 
+  width: 470px;
+  border: 1px solid black; 
+  border-bottom: none;
+  text-align: center; 
+  margin: 0;
+  padding: 7px 5px;
+}
+.message { 
+  width: 470px; 
+  height: 140px;
+  font-family: monospace; 
+  border: 1px solid black; 
+  position: relative;
+  top: -2px;
+  margin: 0;
+  padding: 7px 5px;
+  overflow: hidden;
+}
+.spacer {
+  margin: 20px 0;
+}

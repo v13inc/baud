@@ -69,7 +69,7 @@ class MessagesResource(Resource):
         return MessageRepo.get_messages()
 
     def post(self):
-        data = request.form
+        data = request.get_json(force = True)
         MessageRepo.new_message(data['message'], data['name'])
         return MessagesResource.get(self)
 
@@ -78,11 +78,15 @@ api.add_resource(MessagesResource, '/api')
 # add main route
 @app.route('/')
 def home():
-    return send_file('index.html')
+    return send_file('static/index.html')
 
-@app.route('/banners.js')
+@app.route('/baud.js')
 def banners():
-    return send_file('banners.js')
+    return send_file('static/baud.js')
+
+@app.route('/style.css')
+def style():
+    return send_file('static/style.css')
 
 if __name__ == '__main__':
     app.run(debug = True)

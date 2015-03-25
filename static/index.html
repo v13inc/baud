@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>baud</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/template" id="message-template">
+      <div class="message-container">
+        <pre class="name">__NAME__ - __DATE__</pre>
+        <pre class="message">__MESSAGE__</pre>
+      </div>
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="logo">
+        <pre>
+______               _________
+___  /_______ ____  _______  /
+__  __ \  __ `/  / / /  __  / 
+_  /_/ / /_/ // /_/ // /_/ /  
+/_.___/\__,_/ \__,_/ \__,_/   
+        </pre>
+      </div>
+      <form id="message-form">
+        <input type="text" class="name" id="name" placeholder="name">
+        <textarea id="message" class="message" cols="60" rows="10"></textarea>
+        <input type="submit" hidden>
+      </form>
+      <pre class="spacer">══  ══  ══  ══  ══  ══  ══  ══  ══  ══  ══  ══</pre>
+      <div id="message-list"></div>
+    </div>
+    <script src="baud.js"></script>
+  </body>
+</html>
