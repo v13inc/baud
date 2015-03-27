@@ -1,7 +1,7 @@
 import json
 import time
 import redis
-from flask import Flask, request, send_file, render_template
+from flask import Flask, request, send_file, render_template, jsonify
 from flask.ext.socketio import SocketIO, emit
 
 settings = {
@@ -50,9 +50,9 @@ class MessageRepo():
         return MessageRepo.connection
 
     @staticmethod
-    def get_messages(start = 0, end = settings['messages']['per_page'], key = settings['messages']['list_key']):
+    def get_messages(start = 0, amount = settings['messages']['per_page'], key = settings['messages']['list_key']):
         c = MessageRepo.conn()
-        messages = c.zrevrange(key, start, end)
+        messages = c.zrevrange(key, start, int(start) + int(amount) - 1)
         return [json.loads(m) for m in messages]
 
     @staticmethod
@@ -76,17 +76,17 @@ def handle_message(data):
 def home():
     return render_template('index.html', messages_json = json.dumps(MessageRepo.get_messages()))
 
-@app.route('/socketio.js')
-def socketio_js():
-    return send_file('static/socket.io.min.js')
+@app.route('/api/messages', methods=['POST'])
+def post_message():
+    data = validate_message(request.get_json(force = True))
+    handle_message(data)
+    return json.dumps(data)
 
-@app.route('/baud.js')
-def baud_js():
-    return send_file('static/baud.js')
-
-@app.route('/style.css')
-def style():
-    return send_file('static/style.css')
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    start = request.args.get('start', 0)
+    amount = request.args.get('amount', settings['messages']['per_page'])
+    return json.dumps(MessageRepo.get_messages(start, amount))
 
 if __name__ == '__main__':
     socketio.run(app)

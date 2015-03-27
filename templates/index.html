@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>baud</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="static/style.css" />
     <script type="text/template" id="message-template">
       <div class="message-container">
         <pre class="name">__NAME__ - __DATE__</pre>
@@ -33,7 +33,7 @@ _  /_/ / /_/ // /_/ // /_/ /
     <script>
       MESSAGES = {{ messages_json|safe }};
     </script>
-    <script src="socketio.js"></script>
-    <script src="baud.js"></script>
+    <script src="static/socket.io.min.js"></script>
+    <script src="static/baud.js"></script>
   </body>
 </html>
