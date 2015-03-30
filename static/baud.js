@@ -109,31 +109,32 @@ MessageDispatcher = Baud.MessageDispatcher = {};
 
 MessageDispatcher.connected = false;
 
-MessageDispatcher.socket = function() {
-  if(MessageDispatcher.conn) return MessageDispatcher.conn;
-  var conn = MessageDispatcher.conn = io.connect();
-  conn.on('connect', MessageDispatcher.onConnect);
-  return conn;
+MessageDispatcher.init = function() {
+  var conn = MessageDispatcher.conn = new WebSocket(WS_ADDRESS);
+  conn.onclose = MessageDispatcher.onClose;
+  conn.onopen = MessageDispatcher.onConnect;
+  conn.onmessage = MessageDispatcher.onMessage;
 }
 
-MessageDispatcher.onConnect = function() {
-  var socket = MessageDispatcher.socket();
+MessageDispatcher.onClose = function(e) {
+  console.log('Connection closed', e);
+}
+
+MessageDispatcher.onConnect = function(e) {
   MessageDispatcher.connected = true;
-  socket.on('new_message', MessageDispatcher.onMessage);
+  console.log('Connection ready', e)
 }
 
-MessageDispatcher.onMessage = function(message) {
-  console.log('message', message);
+MessageDispatcher.onMessage = function(e) {
+  var message = JSON.parse(e.data);
   MessageList.addMessage(message);
 }
 
-MessageDispatcher.init = function() {
-  MessageDispatcher.socket();
+MessageDispatcher.sendMessage = function(name, message) {
+  MessageDispatcher.conn.send(JSON.stringify({ name: name, message: message }));
 }
 
-MessageDispatcher.sendMessage = function(name, message) {
-  MessageDispatcher.socket().emit('send_message', { name: name, message: message });
-}
+MessageDispatcher.init();
 
 // 
 // MessageInput

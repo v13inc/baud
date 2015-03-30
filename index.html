@@ -31,7 +31,8 @@ _  /_/ / /_/ // /_/ // /_/ /
       <div id="message-list"></div>
     </div>
     <script>
-      MESSAGES = {{ messages_json|safe }};
+      WS_ADDRESS = "{{.WsAddress}}";
+      MESSAGES = {{.Messages}};
     </script>
     <script src="static/socket.io.min.js"></script>
     <script src="static/baud.js"></script>
