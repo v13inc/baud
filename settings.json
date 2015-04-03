@@ -1,9 +1,0 @@
-{
-  "redis": "localhost:6379",
-  "serve": "0.0.0.0:5000",
-  "websocket": "ws://localhost:5000/ws",
-  "messagesKey": "messages",
-  "messagesPerPage": 100,
-  "messageWidth": 60,
-  "messageHeight": 10
-}

@@ -1,0 +1,10 @@
+{
+  "redis": "localhost:6379",
+  "serve": "0.0.0.0:5000",
+  "websocket": "ws://baud.v13inc.com/ws",
+  "messagesKey": "messages",
+  "messagesPerPage": 100,
+  "messageWidth": 60,
+  "messageHeight": 10,
+  "messageName": "Anonymous"
+}
