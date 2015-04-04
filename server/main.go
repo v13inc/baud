@@ -39,11 +39,8 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	messages = repo.NewMessages(r, "messages")
-	home = stream.New("baud", messages, temp)
-
-	http.Handle("/", &home)
-	go home.Run()
+	manager := stream.NewManager(r, temp)
+	http.Handle("/", &manager)
 
 	if err = http.ListenAndServe(settings.S.ServeAddress, nil); err != nil {
 		log.Fatal("Error setting up http.ListenAndServe: ", err)

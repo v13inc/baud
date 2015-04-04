@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"errors"
+	"github.com/v13inc/baud/settings"
 	"io"
-	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -83,14 +85,22 @@ func HasFormData(r *http.Request) bool {
 	return strings.Contains(header, "multipart/form-data")
 }
 
-func Error(w http.ResponseWriter, r *http.Request, message string, err error) {
-	log.Println("ERROR: ", message)
-	log.Println(err)
-	http.Error(w, message, http.StatusInternalServerError)
-}
-
 func Flush(w io.Writer) {
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()
 	}
+}
+
+func PathParts(u *url.URL) []string {
+	path := strings.Trim(u.Path, "/")
+	return strings.Split(path, "/")
+}
+
+func StreamSlug(u *url.URL) (string, error) {
+	parts := PathParts(u)
+	if len(parts) > 1 || !strings.HasPrefix(parts[0], settings.S.StreamPrefix) {
+		return "", errors.New("Invalid Stream path")
+	}
+
+	return parts[0][len(settings.S.StreamPrefix):], nil
 }

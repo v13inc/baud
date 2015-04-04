@@ -17,6 +17,7 @@ type context struct {
 }
 
 type MessageCallback func(*message.Message, []byte)
+
 type Stream struct {
 	name     string
 	hub      connection.Hub
@@ -40,12 +41,8 @@ func (s *Stream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		s.Post(w, r)
 	default:
-		s.MethodError(w, r)
+		utils.MethodNotSupported(w, r)
 	}
-}
-
-func (s *Stream) MethodError(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, http.ErrNotSupported.Error(), http.StatusMethodNotAllowed)
 }
 
 func (s *Stream) Get(w http.ResponseWriter, r *http.Request) {

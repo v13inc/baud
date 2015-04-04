@@ -14,6 +14,7 @@ type Settings struct {
 	MessageWidth  int    `json:"messageWidth"`
 	MessageHeight int    `json:"messageHeight"`
 	MessageName   string `json:"messageName"`
+	StreamPrefix  string `json:"streamPrefix"`
 }
 
 var S Settings

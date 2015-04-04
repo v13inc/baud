@@ -6,5 +6,6 @@
   "messagesPerPage": 100,
   "messageWidth": 60,
   "messageHeight": 10,
-  "messageName": "Anonymous"
+  "messageName": "Anonymous",
+  "streamPrefix": "~"
 }
